@@ -96,4 +96,4 @@ jobs:
 
       - name: Apply all manifests
         run: |
-          kubectl apply -f k8s/rendered/
+          kubectl apply -f k8s/rendered/ --recursive
