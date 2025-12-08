@@ -28,3 +28,4 @@ spec:
               value: "http://order-service:4000/orders"
             - name: MOVIE_SERVICE_URL
               value: "http://movies-service:8082/api/v1"
+          imagePullPolicy: Always

@@ -36,3 +36,5 @@ spec:
               port: 8000
             initialDelaySeconds: 2
             periodSeconds: 5
+
+          imagePullPolicy: Always
