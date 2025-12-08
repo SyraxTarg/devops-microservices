@@ -1,0 +1,78 @@
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./auth-service/.env
+    volumes:
+      - auth_db_data:/app/db
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./order-service/.env
+    volumes:
+      - order_db_data:/app/prisma
+    depends_on:
+      - auth-service
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - auth-service
+      - order-service
+      - movies-service
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: movies
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - movies-network
+
+  movies-service:
+    build:
+      context: ./movies-service
+      dockerfile: dockerfile
+    env_file:
+      - movies-service/.env
+    container_name: movies-service
+    depends_on:
+      - db
+    ports:
+      - "8082:8082"
+    networks:
+      - movies-network
+
+volumes:
+  auth_db_data:
+  order_db_data:
+  pgdata:
+
+networks:
+  movies-network:
+    driver: bridge
+
