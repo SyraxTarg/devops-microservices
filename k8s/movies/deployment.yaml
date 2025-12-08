@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-service
+  namespace: microservices
+  labels:
+    app: movies-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movies-service
+  template:
+    metadata:
+      labels:
+        app: movies-service
+    spec:
+      containers:
+        - name: movies-service
+          image: 20220796/microservices-movies-service:latest
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: movies-config-map
+          env:
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: movies-secret
+                  key: API_TOKEN
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: movies-secret
+                  key: API_KEY
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: movies-secret
+                  key: SECRET_KEY
+            - name: ALGORITHM
+              valueFrom:
+                secretKeyRef:
+                  name: movies-secret
+                  key: ALGORITHM
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: movies-secret
+                  key: DATABASE_URL
+            - name: MOVIE_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: movies-config-map
+                  key: MOVIE_API_URL
+            - name: CORS_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: movies-config-map
+                  key: CORS_ORIGINS
+
+          # Vérifie régulièrement si le service fonctionne
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          # Vérifie si le service est prêt à recevoir du trafic
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 2
+            periodSeconds: 5

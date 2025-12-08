@@ -41,7 +41,6 @@ async def get_popular_movies(page: int)->list[Movie]:
 async def get_movies_by_user_preferences(db: Session, page: int, user_id: int)->list[Movie]:
     user_preferences = await preferences_service.get_preferences_by_user(db, user_id)
     preferences = [str(pref.genre_id) for pref in user_preferences]
-    print(preferences)
 
     all_movies = await movies_service.get_movies(f"/discover/movie?include_adult=false&include_video=false&language=fr&page={page}&sort_by=popularity.desc&with_genres={"|".join(preferences)}")
     movies = []
