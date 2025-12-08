@@ -1,0 +1,3 @@
+k8s/movies/movies-config-map.yaml
+k8s/movies/movies-secret.yaml
+k8s/postgres/postgresdb-secret.yaml
