@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: movies-config-map
+  labels:
+    app: movies-config-map
+data:
+  MOVIE_API_URL: $MOVIE_API_URL
+  CORS_ORIGINS: $CORS_ORIGINS

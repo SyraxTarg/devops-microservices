@@ -110,6 +110,7 @@ CORS_ORIGINS=CHANGEME
 ## Kubernetes Deployment
 
 The `k8s` folder contains all Kubernetes manifests required to deploy the entire application.
+/!\ In order not to commit sensitive data, secret and configmap manifest have been populated with placeholders. Please add you own values before applying anything and do not commit your secret values on git. Even though this is a school project, a vault or keaycloak could have been used to handle those sensitive values.
 
 To apply all manifests:
 
