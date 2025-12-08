@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: 20220796/microservices-order-service:latest
+          image: 20220796/microservices-order-service:2.0
           ports:
             - containerPort: 4000
           imagePullPolicy: Always

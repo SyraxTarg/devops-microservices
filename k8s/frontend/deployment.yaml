@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 20220796/microservices-frontend:latest
+          image: 20220796/microservices-frontend:2.0
           ports:
             - containerPort: 3000
 

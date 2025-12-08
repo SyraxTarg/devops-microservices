@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 20220796/microservices-auth-service:latest
+          image: 20220796/microservices-auth-service:2.0
           ports:
             - containerPort: 8000
 
