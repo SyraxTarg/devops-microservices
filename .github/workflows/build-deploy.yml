@@ -67,32 +67,32 @@ jobs:
           printf "%s" "${{ secrets.KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Set environment variables
-        run: |
-          export MOVIE_API_URL="${{ secrets.MOVIE_API_URL }}"
-          export CORS_ORIGINS="${{ secrets.CORS_ORIGINS }}"
-          export API_TOKEN="${{ secrets.API_TOKEN }}"
-          export API_KEY="${{ secrets.API_KEY }}"
-          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
-          export ALGORITHM="${{ secrets.ALGORITHM }}"
-          export POSTGRES_DB="${{ secrets.POSTGRES_DB }}"
-          export POSTGRES_USER="${{ secrets.POSTGRES_USER }}"
-          export POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}"
-
       - name: Render secrets templates
         run: |
-          mkdir -p k8s/rendered/secrets
-          for file in k8s/secrets/*.yaml; do
-            envsubst < "$file" > "k8s/rendered/secrets/$(basename $file)"
-          done
+            mkdir -p k8s/rendered/secrets
 
-          # Copier les autres manifests tels quels
-          cp -r k8s/auth k8s/rendered/
-          cp -r k8s/frontend k8s/rendered/
-          cp -r k8s/ingress k8s/rendered/
-          cp -r k8s/movies k8s/rendered/
-          cp -r k8s/order k8s/rendered/
-          cp -r k8s/postgres k8s/rendered/
+            export MOVIE_API_URL="${{ secrets.MOVIE_API_URL }}"
+            export CORS_ORIGINS="${{ secrets.CORS_ORIGINS }}"
+            export API_TOKEN="${{ secrets.API_TOKEN }}"
+            export API_KEY="${{ secrets.API_KEY }}"
+            export SECRET_KEY="${{ secrets.SECRET_KEY }}"
+            export ALGORITHM="${{ secrets.ALGORITHM }}"
+            export POSTGRES_DB="${{ secrets.POSTGRES_DB }}"
+            export POSTGRES_USER="${{ secrets.POSTGRES_USER }}"
+            export POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}"
+
+            for file in k8s/secrets/*.yaml; do
+            envsubst < "$file" > "k8s/rendered/secrets/$(basename $file)"
+            done
+
+            # Copier les autres manifests
+            cp -r k8s/auth k8s/rendered/
+            cp -r k8s/frontend k8s/rendered/
+            cp -r k8s/ingress k8s/rendered/
+            cp -r k8s/movies k8s/rendered/
+            cp -r k8s/order k8s/rendered/
+            cp -r k8s/postgres k8s/rendered/
+
 
       - name: Apply all manifests
         run: |
