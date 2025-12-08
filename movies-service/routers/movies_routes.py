@@ -30,7 +30,7 @@ async def get_recommended_movies(
     return await movies_controller.get_movies_by_user_preferences(db, page, user.id)
 
 @router.get("/{genre_id}", response_model=list[Movie], status_code=200)
-async def get_popular_movies(
+async def get_popular_movies_by_genre(
     genre_id: int,
     page: int = 1,
     _ = Depends(get_connected_user)

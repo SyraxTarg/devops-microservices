@@ -1,76 +1,168 @@
 # Microservices Application – README
 
-This project is a distributed application composed of several microservices developed during the course.
-Each service has its own responsibility, environment variables, and can be deployed independently or via Kubernetes.
+This project is a distributed microservices application developed as part of the course.
+Each service is designed to be independent, scalable, and deployable both locally or on Kubernetes.
 
 ---
 
-## Microservices Architecture
+## Table of Contents
 
-The application consists of the following services:
+1. [Project Description](#project-description)
+2. [Architecture](#architecture)
+3. [Installation](#installation)
+4. [Running with Docker Compose](#running-with-docker-compose)
+5. [Kubernetes Deployment](#kubernetes-deployment)
+6. [Environment Variables](#environment-variables)
+7. [Main API Endpoints](#main-api-endpoints)
 
 ---
 
-### 1. **Auth Service – FastAPI**
+## Project Description
 
-Handles authentication (login, signup, token generation).
+This application simulates a multi-service platform that handles user authentication, movie data consumption, and customer orders, all served via a frontend interface.
 
-- **Tech stack:** FastAPI
-- **Folder:** `auth-service`
+---
 
-**Environment variables (.env):**
-Please create the .env file based on the .env.example
+## Architecture
 
-```.env
-# JWT variables
+The system follows a microservices architecture:
+
+| Service        | Responsibility                                | Tech Stack           | Folder           |
+| -------------- | --------------------------------------------- | -------------------- | ---------------- |
+| Auth Service   | User authentication, login/signup, JWT tokens | FastAPI              | `auth-service`   |
+| Movies Service | Consume TheMovieDB API, manage movie database | FastAPI + PostgreSQL | `movies-service` |
+| Order Service  | Manage customer orders                        | Nuxt.js              | `order-service`  |
+| Frontend       | Main user interface                           | Next.js              | `frontend`       |
+| k8s       | kubernetes manifests                       | yaml            | `k8q`       |
+
+
+---
+
+## Installation
+
+### Prerequisites
+
+* Python 3.11+
+* Node.js 20+
+* PostgreSQL (for Movies Service)
+* Docker & Docker Compose
+* Kubectl (for Kubernetes deployment)
+
+### Local Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/SyraxTarg/devops-microservices.git
+cd devops-microservices
+```
+
+2. Copy `.env.example` files to `.env` in each service folder and fill in your values.
+
+3. Install dependencies for each service:
+
+* **Auth Service**
+
+```bash
+cd auth-service
+pip install -r requirements.txt
+```
+
+* **Movies Service**
+
+```bash
+cd movies-service
+pip install -r requirements.txt
+```
+
+* **Order Service**
+
+```bash
+cd order-service
+npm install
+```
+
+* **Frontend**
+
+```bash
+cd frontend
+npm install
+```
+
+---
+
+## Running with Docker Compose
+
+Start all services with:
+
+```bash
+docker-compose up --build
+```
+
+* Auth Service: `http://localhost:8000`
+* Movies Service: `http://localhost:8082`
+* Order Service: `http://localhost:4000`
+* Frontend: `http://localhost:3000`
+
+Stop services:
+
+```bash
+docker-compose down -v
+```
+
+---
+
+## Kubernetes Deployment
+
+All manifests are located in the `k8s/` folder.
+Before applying, replace placeholder values in secrets and configmaps.
+
+Apply manifests recursively:
+
+```bash
+kubectl apply -f k8s/ --recursive
+```
+
+---
+
+## Environment Variables
+
+Each service uses environment variables defined in its `.env` file. Example:
+
+### Auth Service
+
+```
 JWT_SECRET=CHANGEME
 JWT_ALGO=CHANGEME
 ACCESS_TOKEN_EXPIRES_MIN=CHANGEME
 REFRESH_TOKEN_EXPIRES_MIN=CHANGEME
-
-# Build variables
 CORS_ORIGINS=CHANGEME
-
-# SQLite variables
 DATABASE_URL=CHANGEME
 ```
 
----
+### Movies Service
 
-### 2. **Order Service – Nuxt**
+```
+API_TOKEN=CHANGEME
+API_KEY=CHANGEME
+DATABASE_URL=CHANGEME
+MOVIE_API_URL=CHANGEME
+SECRET_KEY=CHANGEME
+ALGORITHM=CHANGEME
+CORS_ORIGINS=CHANGEME
+```
 
-Manages customer orders.
+### Order Service
 
-- **Tech stack:** Nuxt
-- **Folder:** `order-service`
-
-**Environment variables (.env):**
-Please create the .env file based on the .env.example
-
-```.env
-# JWT variables
+```
 JWT_SECRET=CHANGEME
-
-# Build variables
 PORT=CHANGEME
-
-# SQLite variables
 DATABASE_URL=CHANGEME
 ```
 
----
+### Frontend
 
-### 3. **Frontend – Next.js**
-
-Main user interface of the application.
-
-- **Tech stack:** Next.js
-- **Folder:** `frontend`
-
-**Environment variables (.env):**
-Please create the .env file based on the .env.example
-
-```.env
+```
 NEXT_PUBLIC_API_BASE=CHANGEME
 AUTH_SERVICE_URL=CHANGEME
 ORDER_SERVICE_URL=CHANGEME
@@ -79,74 +171,58 @@ MOVIE_SERVICE_URL=CHANGEME
 
 ---
 
-### 4. **Movies Service – FastAPI**
+## Main API Endpoints
 
-Consumes the public **TheMovieDB** API and uses a PostgreSQL database.
-You can access the openapi documentation at the `/docs` route.
+### Auth Service
 
-- **Tech stack:** FastAPI + PostgreSQL
-- **Folder:** `movies-service`
+* `POST /register` – Register a new user
+* `POST /login` – Login a user
+* `POST /refresh` – Refresh the token
 
-**Environment variables (.env):**
-Please create the .env file based on the .env.example
 
-```.env
-API_TOKEN=CHANGEME
-API_KEY=CHANGEME
+### Movies Service
 
-DATABASE_URL=CHANGEME
+* `GET /genres` – Get all genres
+* `GET /movies/popular` – Get popular movies
+* `GET /movies/recommandations` – Get recommandations for a user
+* `GET /movies/{genre_id}}` – Get popular movies by genre
 
-MOVIE_API_URL=CHANGEME
+### Order Service
 
-SECRET_KEY=CHANGEME
+* `GET /orders` – List all orders for a connected user
+* `POST /orders` – Create a new order for a connected user
+* `GET /orders/{id}` – Retrieve a specific order for a connected user
+* `DELETE /orders/{id}` – Delete a specific order for a connected user
 
-ALGORITHM=CHANGEME
+### Frontend
 
-CORS_ORIGINS=CHANGEME
-```
-
----
-
-## Kubernetes Deployment
-
-The `k8s` folder contains all Kubernetes manifests required to deploy the entire application.
-/!\ In order not to commit sensitive data, secret and configmap manifest have been populated with placeholders. Please add you own values before applying anything and do not commit your secret values on git. Even though this is a school project, a vault or keaycloak could have been used to handle those sensitive values.
-
-To apply all manifests:
-
-```bash
-kubectl apply -f k8s/ --recursive
-```
+* Acts like a proxy and uses the microservices's routes
 
 ---
 
-## Local Development
+## Local Development Commands
 
-Each service can be run individually:
-
-### Auth service
+* **Auth Service:**
 
 ```bash
 python init_db.py && uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-### Movies service
+* **Movies Service:**
 
 ```bash
 python main.py
 ```
 
-### order-service
+* **Order Service:**
 
 ```bash
-npm install
 npm run dev
 ```
 
-### frontend
+* **Frontend:**
 
 ```bash
-npm install
 npm run dev
 ```
 
