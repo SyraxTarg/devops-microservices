@@ -17,26 +17,11 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 20220796/microservices-auth-service:1.0
-          imagePullPolicy: Never
+          image: 20220796/microservices-auth-service:2.0
           ports:
             - containerPort: 8000
 
-          env:
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: JWT_SECRET
-
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
-
+          # Vérifie régulièrement si le service fonctionne
           livenessProbe:
             httpGet:
               path: /health
@@ -44,9 +29,12 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
 
+          # Vérifie si le service est prêt à recevoir du trafic
           readinessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 2
             periodSeconds: 5
+
+          imagePullPolicy: Always

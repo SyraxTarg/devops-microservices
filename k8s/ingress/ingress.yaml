@@ -4,40 +4,13 @@ metadata:
   name: devops-ingress
   namespace: microservices
   annotations:
-    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
-    - host: miti.local
+    - host: devops.local
       http:
         paths:
-          # 1) Auth-service : /auth → FastAPI
-          - path: /auth
-            pathType: Prefix
-            backend:
-              service:
-                name: auth-service
-                port:
-                  number: 8000
-
-          # 2) Order-service : /orders → NestJS
-          - path: /orders
-            pathType: Prefix
-            backend:
-              service:
-                name: order-service
-                port:
-                  number: 4000
-
-          # Movies-service : /movies → FastAPI
-          - path: /movies-svc
-            pathType: Prefix
-            backend:
-              service:
-                name: movies-service
-                port:
-                  number: 8082
-
-          # 3) Frontend : tout le reste → Next.js
           - path: /
             pathType: Prefix
             backend:
@@ -45,3 +18,10 @@ spec:
                 name: frontend
                 port:
                   number: 3000
+          - path: /movies-svc
+            pathType: Prefix
+            backend:
+              service:
+                name: movies-service
+                port:
+                  number: 8082

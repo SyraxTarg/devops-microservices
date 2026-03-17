@@ -17,30 +17,20 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: 20220796/microservices-order-service:1.0
-          imagePullPolicy: Never
+          image: 20220796/microservices-order-service:2.0
           ports:
             - containerPort: 4000
+          imagePullPolicy: Always
 
           env:
             - name: DATABASE_URL
-              value: "file:/app/prisma/dev.db"
+              value: "file:./dev.db"
+            - name: JWT_SECRET
+              value: "change-me"
             - name: PORT
               value: "4000"
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: JWT_SECRET
 
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-
+          # Vérifie si l’app répond
           livenessProbe:
             httpGet:
               path: /health
@@ -48,6 +38,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
 
+          # Vérifie si l’app est prête à recevoir du trafic
           readinessProbe:
             httpGet:
               path: /health

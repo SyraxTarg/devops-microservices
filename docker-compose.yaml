@@ -75,4 +75,6 @@ volumes:
 networks:
   movies-network:
     driver: bridge
+  microservices-net:
+    driver: bridge
 
