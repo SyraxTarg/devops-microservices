@@ -114,8 +114,11 @@ docker-compose down -v
 
 ## Kubernetes Deployment
 
+This part of the project was realised on a cloud kubernetes cluster and not on minikube, you should still be able to run it on minikube.
 All manifests are located in the `k8s/` folder.
 Before applying, replace placeholder values in secrets and configmaps.
+The app will be accessible at `http://miti.local/`, dont forget to modify your hosts file if you need it.
+
 
 Apply manifests recursively:
 
